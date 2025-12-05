@@ -12,21 +12,39 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            AngularGradient(gradient: Gradient(colors: snapshot.palette.background),
-                            center: .topLeading,
-                            angle: .degrees(135))
-                .ignoresSafeArea()
+            WeatherBackgroundView(palette: viewModel.palette)
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    heroVisual
-                    header
-                    vibeCard
-                    moodHighlights
-                    hourStrip
-                    ideaDeck
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
+//                    ConditionHeroView(
+//                        condition: viewModel.snapshot.condition,
+//                        palette: viewModel.palette
+//                    )
+                    WeatherHeaderView(
+                        city: viewModel.snapshot.city,
+                        date: viewModel.snapshot.today,
+                        onCalendarTap: {}
+                    )
+                    VibeCardView(
+                        snapshot: viewModel.snapshot,
+                        vibe: viewModel.vibe,
+                        idea: viewModel.highlightedIdea
+                    )
+                    RhythmHighlightsView(
+                        blocks: viewModel.snapshot.rhythm,
+                        primaryColor: viewModel.palette.primary
+                    )
+                    HourlyForecastStripView(
+                        hourly: viewModel.snapshot.hourly,
+                        primaryColor: viewModel.palette.primary
+                    )
+                    IdeaDeckView(
+                        title: "Ідеї, поки дощ малює фон",
+                        ideas: viewModel.ideas,
+                        accentColor: viewModel.palette.primary
+                    )
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 32)
+                .padding(.horizontal, DesignSystem.Padding.screenHorizontal)
+                .padding(.vertical, DesignSystem.Padding.screenVertical)
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -40,249 +58,10 @@ struct ContentView: View {
             await viewModel.load()
         }
     }
-
-    private var snapshot: WeatherSnapshot {
-        viewModel.snapshot
-    }
-
-    private var vibe: Vibe {
-        viewModel.vibe
-    }
-
-    private var idea: ActivityIdea {
-        viewModel.idea
-    }
-
-    private var ideaList: [ActivityIdea] {
-        viewModel.ideas
-    }
-
-    private var heroVisual: some View {
-        HStack {
-            ZStack {
-                Circle()
-                    .fill(.white.opacity(0.12))
-                    .frame(width: 120, height: 120)
-                Circle()
-                    .stroke(snapshot.palette.primary.opacity(0.5), lineWidth: 8)
-                    .frame(width: 140, height: 140)
-                    .blur(radius: 2)
-                Image(systemName: snapshot.condition.symbol)
-                    .font(.system(size: 60, weight: .semibold))
-                    .foregroundStyle(snapshot.palette.primary)
-                    .shadow(color: .black.opacity(0.25), radius: 10, y: 8)
-            }
-            Spacer()
-        }
-    }
-
-    private var header: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(snapshot.city)
-                    .font(.system(.largeTitle, design: .rounded, weight: .bold))
-                    .foregroundStyle(.white)
-                Text(snapshot.today, style: .date)
-                    .font(.system(.subheadline, design: .rounded, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.8))
-            }
-            Spacer()
-            Button {
-                // Placeholder for future "sync with calendar" action
-            } label: {
-                Image(systemName: "calendar.badge.clock")
-                    .font(.title3)
-                    .foregroundStyle(.white)
-                    .padding(12)
-                    .background(.white.opacity(0.15), in: Capsule())
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
-    private var vibeCard: some View {
-        ZStack(alignment: .leading) {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(snapshot.palette.card.opacity(0.72))
-            // Hero image placeholder; add assets named hero_sun / hero_rain / hero_cloud.
-            Image(heroImageName)
-                .resizable()
-                .scaledToFill()
-                .opacity(0.65)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-            LinearGradient(
-                colors: [
-                    Color.black.opacity(0.55),
-                    Color.black.opacity(0.25)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .center, spacing: 12) {
-                    Image(systemName: snapshot.condition.symbol)
-                        .font(.system(size: 46, weight: .semibold))
-                        .foregroundStyle(snapshot.palette.primary)
-                        .shadow(color: .white.opacity(0.2), radius: 10, y: 6)
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(snapshot.condition.title)
-                            .font(.system(.title2, design: .rounded, weight: .bold))
-                        Text(snapshot.condition.tagline)
-                            .font(.system(.callout, design: .rounded, weight: .semibold))
-                            .foregroundStyle(.secondary.opacity(0.8))
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing) {
-                        Text("\(snapshot.temperature)°")
-                            .font(.system(size: 46, weight: .bold, design: .rounded))
-                        Text("Відчувається як \(snapshot.feelsLike)°")
-                            .font(.system(.subheadline, design: .rounded))
-                            .foregroundStyle(.secondary)
-                    }
-                    .foregroundStyle(.white)
-                }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(vibe.title)
-                        .font(.system(.title3, design: .rounded, weight: .bold))
-                        .foregroundStyle(snapshot.palette.primary)
-                    Text(vibe.message)
-                        .font(.system(.body, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.9))
-                    Divider().overlay(.white.opacity(0.25))
-                    HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: idea.icon)
-                            .foregroundStyle(snapshot.palette.primary)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(idea.title)
-                                .font(.system(.callout, design: .rounded, weight: .semibold))
-                                .foregroundStyle(.white)
-                            Text(idea.detail)
-                                .font(.system(.footnote, design: .rounded))
-                                .foregroundStyle(.white.opacity(0.8))
-                        }
-                        Spacer()
-                        Image(systemName: idea.accentIcon)
-                            .foregroundStyle(.white.opacity(0.4))
-                    }
-                }
-            }
-            .padding(20)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay(alignment: .topTrailing) {
-            AnimatedSparkle(color: snapshot.palette.primary.opacity(0.8))
-                .offset(x: 22, y: -18)
-        }
-        .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
-    }
-
-    private var moodHighlights: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Ритм дня")
-            HStack(spacing: 12) {
-                ForEach(snapshot.rhythm, id: \.title) { block in
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label(block.title, systemImage: block.icon)
-                            .font(.system(.footnote, design: .rounded, weight: .semibold))
-                            .labelStyle(.iconOnly)
-                            .foregroundStyle(snapshot.palette.primary)
-                        Text(block.title)
-                            .font(.system(.callout, design: .rounded, weight: .semibold))
-                            .foregroundStyle(.white)
-                        Text(block.detail)
-                            .font(.system(.footnote, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.75))
-                    }
-                    .padding(14)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                }
-            }
-        }
-    }
-
-    private var hourStrip: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Сьогодні по годинах")
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(snapshot.hourly, id: \.time) { hour in
-                        VStack(spacing: 8) {
-                            Text(hour.time)
-                                .font(.system(.footnote, design: .rounded, weight: .bold))
-                                .foregroundStyle(.white)
-                            Image(systemName: hour.icon)
-                                .foregroundStyle(snapshot.palette.primary)
-                            Text("\(hour.temperature)°")
-                                .font(.system(.headline, design: .rounded, weight: .bold))
-                                .foregroundStyle(.white)
-                            Text(hour.idea)
-                                .font(.system(.caption2, design: .rounded))
-                                .foregroundStyle(.white.opacity(0.7))
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(14)
-                        .frame(width: 120)
-                        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    }
-                }
-            }
-        }
-    }
-
-    private var ideaDeck: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Ідеї, поки дощ малює фон")
-            ForEach(ideaList) { idea in
-                HStack(alignment: .top, spacing: 12) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(snapshot.palette.primary.opacity(0.2))
-                            .frame(width: 48, height: 48)
-                        Image(systemName: idea.icon)
-                            .font(.title3)
-                            .foregroundStyle(snapshot.palette.primary)
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(idea.title)
-                            .font(.system(.headline, design: .rounded, weight: .semibold))
-                            .foregroundStyle(.white)
-                        Text(idea.detail)
-                            .font(.system(.subheadline, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
-                    Spacer()
-                    Image(systemName: idea.accentIcon)
-                        .foregroundStyle(.white.opacity(0.4))
-                }
-                .padding(14)
-                .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            }
-        }
-    }
-
-    private func sectionTitle(_ text: String) -> some View {
-        Text(text)
-            .font(.system(.title3, design: .rounded, weight: .bold))
-            .foregroundStyle(.white)
-    }
-
-    private var heroImageName: String {
-        switch snapshot.condition {
-        case .sun:
-            return "hero_sun"
-        case .rain:
-            return "hero_rain"
-        case .cloud:
-            return "hero_cloud"
-        }
-    }
 }
 
 #Preview {
     ContentView(viewModel: WeatherViewModel(
-            weatherService: MockWeatherService(), suggestionEngine: SuggestionEngine()
+            weatherService: MockWeatherService()
         ))
 }
