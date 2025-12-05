@@ -13,9 +13,9 @@ enum Condition {
 
     var tagline: String {
         switch self {
-        case .sun: return "Город зовет на прогулку"
-        case .rain: return "Ритм замедляется — бери уют"
-        case .cloud: return "Мягкий свет, идеален для работы"
+        case .sun: return "Місто кличе на прогулянку"
+        case .rain: return "Ритм сповільнюється — бери затишок"
+        case .cloud: return "М’яке світло, ідеальне для роботи"
         }
     }
 

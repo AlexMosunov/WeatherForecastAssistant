@@ -18,6 +18,7 @@ struct ContentView: View {
                 .ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
+                    heroVisual
                     header
                     vibeCard
                     moodHighlights
@@ -36,12 +37,43 @@ struct ContentView: View {
             }
         }
         .task {
-            await viewModel.refresh()
+            await viewModel.load()
         }
     }
 
     private var snapshot: WeatherSnapshot {
         viewModel.snapshot
+    }
+
+    private var vibe: Vibe {
+        viewModel.vibe
+    }
+
+    private var idea: ActivityIdea {
+        viewModel.idea
+    }
+
+    private var ideaList: [ActivityIdea] {
+        viewModel.ideas
+    }
+
+    private var heroVisual: some View {
+        HStack {
+            ZStack {
+                Circle()
+                    .fill(.white.opacity(0.12))
+                    .frame(width: 120, height: 120)
+                Circle()
+                    .stroke(snapshot.palette.primary.opacity(0.5), lineWidth: 8)
+                    .frame(width: 140, height: 140)
+                    .blur(radius: 2)
+                Image(systemName: snapshot.condition.symbol)
+                    .font(.system(size: 60, weight: .semibold))
+                    .foregroundStyle(snapshot.palette.primary)
+                    .shadow(color: .black.opacity(0.25), radius: 10, y: 8)
+            }
+            Spacer()
+        }
     }
 
     private var header: some View {
@@ -69,52 +101,76 @@ struct ContentView: View {
     }
 
     private var vibeCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .center, spacing: 12) {
-                Image(systemName: snapshot.condition.symbol)
-                    .font(.system(size: 46, weight: .semibold))
-                    .foregroundStyle(snapshot.palette.primary)
-                    .shadow(color: .white.opacity(0.2), radius: 10, y: 6)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(snapshot.condition.title)
-                        .font(.system(.title2, design: .rounded, weight: .bold))
-                    Text(snapshot.condition.tagline)
-                        .font(.system(.callout, design: .rounded, weight: .semibold))
-                        .foregroundStyle(.secondary.opacity(0.8))
+        ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(snapshot.palette.card.opacity(0.72))
+            // Hero image placeholder; add assets named hero_sun / hero_rain / hero_cloud.
+            Image(heroImageName)
+                .resizable()
+                .scaledToFill()
+                .opacity(0.65)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.55),
+                    Color.black.opacity(0.25)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: snapshot.condition.symbol)
+                        .font(.system(size: 46, weight: .semibold))
+                        .foregroundStyle(snapshot.palette.primary)
+                        .shadow(color: .white.opacity(0.2), radius: 10, y: 6)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(snapshot.condition.title)
+                            .font(.system(.title2, design: .rounded, weight: .bold))
+                        Text(snapshot.condition.tagline)
+                            .font(.system(.callout, design: .rounded, weight: .semibold))
+                            .foregroundStyle(.secondary.opacity(0.8))
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing) {
+                        Text("\(snapshot.temperature)°")
+                            .font(.system(size: 46, weight: .bold, design: .rounded))
+                        Text("Відчувається як \(snapshot.feelsLike)°")
+                            .font(.system(.subheadline, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+                    .foregroundStyle(.white)
                 }
-                Spacer()
-                VStack(alignment: .trailing) {
-                    Text("\(snapshot.temperature)°")
-                        .font(.system(size: 46, weight: .bold, design: .rounded))
-                    Text("feels \(snapshot.feelsLike)°")
-                        .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(.secondary)
-                }
-                .foregroundStyle(.white)
-            }
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text(snapshot.vibe.title)
-                    .font(.system(.title3, design: .rounded, weight: .bold))
-                    .foregroundStyle(snapshot.palette.primary)
-                Text(snapshot.vibe.message)
-                    .font(.system(.body, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.9))
-                Divider().overlay(.white.opacity(0.25))
-                HStack(spacing: 12) {
-                    ForEach(snapshot.highlights, id: \.self) { highlight in
-                        Text(highlight)
-                            .font(.system(.footnote, design: .rounded, weight: .semibold))
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 12)
-                            .background(.white.opacity(0.14), in: Capsule())
-                            .foregroundStyle(.white)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(vibe.title)
+                        .font(.system(.title3, design: .rounded, weight: .bold))
+                        .foregroundStyle(snapshot.palette.primary)
+                    Text(vibe.message)
+                        .font(.system(.body, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.9))
+                    Divider().overlay(.white.opacity(0.25))
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: idea.icon)
+                            .foregroundStyle(snapshot.palette.primary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(idea.title)
+                                .font(.system(.callout, design: .rounded, weight: .semibold))
+                                .foregroundStyle(.white)
+                            Text(idea.detail)
+                                .font(.system(.footnote, design: .rounded))
+                                .foregroundStyle(.white.opacity(0.8))
+                        }
+                        Spacer()
+                        Image(systemName: idea.accentIcon)
+                            .foregroundStyle(.white.opacity(0.4))
                     }
                 }
             }
+            .padding(20)
         }
-        .padding(20)
-        .background(snapshot.palette.card.opacity(0.9), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .overlay(alignment: .topTrailing) {
             AnimatedSparkle(color: snapshot.palette.primary.opacity(0.8))
                 .offset(x: 22, y: -18)
@@ -149,7 +205,7 @@ struct ContentView: View {
 
     private var hourStrip: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Сегодня по часам")
+            sectionTitle("Сьогодні по годинах")
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(snapshot.hourly, id: \.time) { hour in
@@ -178,8 +234,8 @@ struct ContentView: View {
 
     private var ideaDeck: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionTitle("Идеи, пока дождь рисует фон")
-            ForEach(snapshot.ideas) { idea in
+            sectionTitle("Ідеї, поки дощ малює фон")
+            ForEach(ideaList) { idea in
                 HStack(alignment: .top, spacing: 12) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -212,8 +268,21 @@ struct ContentView: View {
             .font(.system(.title3, design: .rounded, weight: .bold))
             .foregroundStyle(.white)
     }
+
+    private var heroImageName: String {
+        switch snapshot.condition {
+        case .sun:
+            return "hero_sun"
+        case .rain:
+            return "hero_rain"
+        case .cloud:
+            return "hero_cloud"
+        }
+    }
 }
 
 #Preview {
-    ContentView(viewModel: WeatherViewModel(weatherService: MockWeatherService()))
+    ContentView(viewModel: WeatherViewModel(
+            weatherService: MockWeatherService(), suggestionEngine: SuggestionEngine()
+        ))
 }

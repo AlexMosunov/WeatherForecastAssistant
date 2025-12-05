@@ -7,23 +7,23 @@ extension WeatherSnapshot {
         temperature: 9,
         feelsLike: 7,
         condition: .rain,
-        highlights: ["легкий дождь", "ветер 12 км/ч", "уютный 9°"],
+        highlights: ["легкий дощ", "вітер 12 км/год", "атмосферні 9°"],
         rhythm: [
-            .init(title: "Утро", detail: "Медленный старт с чашкой фильтра", icon: "cup.and.saucer.fill"),
-            .init(title: "День", detail: "Спринты задач и фоном джаз", icon: "headphones"),
-            .init(title: "Вечер", detail: "Фильм дома или встреча в кофейне", icon: "film.fill")
+            .init(title: "Ранок", detail: "Повільний старт з чашкою фільтру", icon: "cup.and.saucer.fill"),
+            .init(title: "День", detail: "Спринти задач під легкий джаз", icon: "headphones"),
+            .init(title: "Вечір", detail: "Фільм вдома або зустріч у кав’ярні", icon: "film.fill")
         ],
         hourly: [
-            .init(time: "09:00", temperature: 8, icon: "cloud.rain.fill", idea: "захвати плащ"),
-            .init(time: "12:00", temperature: 9, icon: "cloud.drizzle.fill", idea: "обед в новом месте"),
+            .init(time: "09:00", temperature: 8, icon: "cloud.rain.fill", idea: "візьми плащ"),
+            .init(time: "12:00", temperature: 9, icon: "cloud.drizzle.fill", idea: "обід у новому місці"),
             .init(time: "15:00", temperature: 9, icon: "cloud.rain.fill", idea: "co-working + flat white"),
-            .init(time: "18:00", temperature: 7, icon: "cloud.fill", idea: "вечерний фильм"),
-            .init(time: "21:00", temperature: 6, icon: "cloud.moon.rain.fill", idea: "подвести итоги дня")
+            .init(time: "18:00", temperature: 7, icon: "cloud.fill", idea: "вечірній фільм"),
+            .init(time: "21:00", temperature: 6, icon: "cloud.moon.rain.fill", idea: "підсумуй день")
         ],
         ideas: [
-            .init(id: UUID(), title: "Кофейня + книга", detail: "Садись у окна, смотри на улицу и перечитай 1–2 главы.", icon: "book.fill", accentIcon: "sparkles"),
-            .init(id: UUID(), title: "Deep work 90 минут", detail: "Шум дождя помогает сосредоточиться — сделай блок работы, потом награди себя десертом.", icon: "laptopcomputer", accentIcon: "clock.arrow.circlepath"),
-            .init(id: UUID(), title: "Вечерняя прогулка", detail: "Если дождь утихнет, короткий прогул с подкастом поможет выключиться из работы.", icon: "figure.walk", accentIcon: "moon.stars.fill")
+            .init(id: UUID(), title: "Кав’ярня + книга", detail: "Сядь біля вікна, дивись на місто і перечитай 1–2 розділи.", icon: "book.fill", accentIcon: "sparkles"),
+            .init(id: UUID(), title: "Deep work 90 хв", detail: "Шум дощу допомагає сфокусуватися — зроби блок роботи, потім нагороди себе десертом.", icon: "laptopcomputer", accentIcon: "clock.arrow.circlepath"),
+            .init(id: UUID(), title: "Вечірня прогулянка", detail: "Якщо дощ вщухне, короткий прогулянковий подкаст вимкне робочі думки.", icon: "figure.walk", accentIcon: "moon.stars.fill")
         ]
     )
 }
