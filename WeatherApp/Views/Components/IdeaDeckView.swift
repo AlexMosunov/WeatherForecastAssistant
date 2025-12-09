@@ -53,7 +53,7 @@ struct IdeaDeckView: View {
         accentColor: Palette.for(condition: .rain).primary
     )
     .padding()
-    .background(Color.black)
+    .background(Color.black.opacity(0.75))
     .frame(width: 360)
     .previewLayout(.sizeThatFits)
 }

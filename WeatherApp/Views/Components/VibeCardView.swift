@@ -12,7 +12,7 @@ struct VibeCardView: View {
             Image(heroImageName)
                 .resizable()
                 .scaledToFill()
-                .opacity(0.65)
+                .opacity(0.8)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
             LinearGradient(
@@ -24,6 +24,12 @@ struct VibeCardView: View {
                 endPoint: .bottomTrailing
             )
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.m) {
+                WeatherHeaderView(
+                    city: snapshot.city,
+                    date: snapshot.today,
+                    onCalendarTap: {}
+                )
+                .padding(.horizontal, DesignSystem.Padding.screenHorizontal)
                 HStack(alignment: .center, spacing: DesignSystem.Spacing.xs) {
                     Image(systemName: snapshot.condition.symbol)
                         .font(.system(size: 46, weight: .semibold))
@@ -47,7 +53,7 @@ struct VibeCardView: View {
                             .foregroundStyle(DesignSystem.Colors.textSecondaryOnDark)
                     }
                 }
-
+                Spacer()
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.s) {
                     Text(vibe.title)
                         .font(.system(.title3, design: .rounded, weight: .bold))
@@ -74,11 +80,11 @@ struct VibeCardView: View {
     private var heroImageName: String {
         switch snapshot.condition {
         case .sun:
-            return "hero_sun"
+            return "hero-sun"
         case .rain:
-            return "hero_rain"
+            return "hero-rain-tall"
         case .cloud:
-            return "hero_cloud"
+            return "hero-cloud"
         }
     }
 

@@ -13,30 +13,24 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             WeatherBackgroundView(palette: viewModel.palette)
+            
             ScrollView {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
-//                    ConditionHeroView(
-//                        condition: viewModel.snapshot.condition,
-//                        palette: viewModel.palette
-//                    )
-                    WeatherHeaderView(
-                        city: viewModel.snapshot.city,
-                        date: viewModel.snapshot.today,
-                        onCalendarTap: {}
-                    )
                     VibeCardView(
                         snapshot: viewModel.snapshot,
                         vibe: viewModel.vibe,
                         idea: viewModel.highlightedIdea
                     )
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xl) {
                     RhythmHighlightsView(
                         blocks: viewModel.snapshot.rhythm,
                         primaryColor: viewModel.palette.primary
                     )
+
                     HourlyForecastStripView(
                         hourly: viewModel.snapshot.hourly,
                         primaryColor: viewModel.palette.primary
                     )
+
                     IdeaDeckView(
                         title: "Ідеї, поки дощ малює фон",
                         ideas: viewModel.ideas,
